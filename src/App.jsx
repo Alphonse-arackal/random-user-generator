@@ -22,6 +22,8 @@ import {
   userSaved,
 } from './redux/usersSlice'
 
+// Extracts the information from the API response and organizes it into a object.
+
 function normalizeUser(raw) {
   return {
     id: raw.login.uuid,
@@ -34,6 +36,7 @@ function normalizeUser(raw) {
   }
 }
 
+// creates a card for each generated user. and display users
 function UserCard({ user, index, isSaved, onSave }) {
   return (
     <article className="grid grid-cols-[28px_64px_minmax(0,1fr)] items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-[30px_76px_minmax(0,1fr)_auto] sm:gap-4 sm:p-5">
@@ -63,7 +66,7 @@ function UserCard({ user, index, isSaved, onSave }) {
     </article>
   )
 }
-
+// Creates a card for each saved profile , disply saved users
 function SavedProfileCard({ user, onRemove }) {
   return (
     <article className="flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 sm:p-4">
@@ -79,6 +82,7 @@ function SavedProfileCard({ user, onRemove }) {
   )
 }
 
+// Displays a message when  list has no profiles.
 function EmptyState({ saved = false, onGenerate }) {
   return (
     <div className="flex flex-col items-center rounded-xl border border-dashed border-slate-300 px-5 py-14 text-center">
@@ -99,6 +103,7 @@ export default function App() {
   const { generatedUsers, savedUsers, loading, error } = useSelector((state) => state.users)
   const [page, setPage] = useState('generated')
 
+  // Fetch a random user
   const generateUser = async () => {
     dispatch(loadingChanged(true))
     dispatch(errorChanged(''))
@@ -113,6 +118,7 @@ export default function App() {
     }
   }
 
+  // Sends the selected profile to Redux to save it and remove it
   const saveUser = (user) => dispatch(userSaved(user))
   const removeUser = (id) => dispatch(savedUserRemoved(id))
 
@@ -163,10 +169,17 @@ export default function App() {
                 </div>
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{generatedUsers.length} users</span>
               </div>
+
+             {/* Display generated profiles */}
               {generatedUsers.length === 0 ? <EmptyState /> : (
                 <div className="grid gap-3">
                   {generatedUsers.map((user, index) => (
-                    <UserCard key={user.id} user={user} index={index} isSaved={savedUsers.some((saved) => saved.id === user.id)} onSave={saveUser} />
+                    <UserCard 
+                    key={user.id} 
+                    user={user} 
+                    index={index} 
+                    isSaved={savedUsers.some((saved) => saved.id === user.id)} 
+                    onSave={saveUser} />
                   ))}
                 </div>
               )}
@@ -181,6 +194,8 @@ export default function App() {
               </div>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{savedUsers.length} saved</span>
             </div>
+
+            {/* Saved Profiles */}
             {savedUsers.length === 0 ? <EmptyState saved onGenerate={() => setPage('generated')} /> : (
               <div className="grid gap-3">
                 {savedUsers.map((user) => <SavedProfileCard key={user.id} user={user} onRemove={removeUser} />)}
